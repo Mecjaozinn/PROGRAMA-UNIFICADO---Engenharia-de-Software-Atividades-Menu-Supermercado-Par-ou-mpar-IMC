@@ -1,0 +1,293 @@
+# ============================================================
+#   PROGRAMA UNIFICADO - Engenharia de Software
+# #   Atividades: Menu Supermercado | Par ou Ímpar | IMC
+# ============================================================
+
+import random
+
+# ─────────────────────────────────────────────
+#  MÓDULO 1 — MENU SUPERMERCADO
+# ─────────────────────────────────────────────
+produtos = {
+    "Arroz 5kg":    12.90,
+    "Feijão 1kg":    8.50,
+    "Leite 1L":      4.75,
+    "Pão de Forma":  7.20,
+    "Macarrão 500g": 3.99,
+    "Óleo 900ml":    6.80,
+    "Açúcar 1kg":    4.50,
+    "Café 500g":     14.99,
+}
+
+carrinho = {}   # { nome_produto: quantidade }
+
+def exibir_catalogo():
+    print("\n╔══════════════════════════════════════╗")
+    print("║        🛒  SUPERMERCADO PYTHON        ║")
+    print("╠══════════════════════════════════════╣")
+    print(f"  {'#':<3} {'Produto':<20} {'Preço':>8}")
+    print("  " + "─" * 35)
+    for i, (nome, preco) in enumerate(produtos.items(), 1):
+        print(f"  {i:<3} {nome:<20} R${preco:>6.2f}")
+    print("╚══════════════════════════════════════╝")
+
+def adicionar_produto():
+    exibir_catalogo()
+    nomes = list(produtos.keys())
+    try:
+        op = int(input("\nNúmero do produto (0 = cancelar): "))
+        if op == 0:
+            return
+        if op < 1 or op > len(nomes):
+            print("  ❌ Opção inválida.")
+            return
+        nome = nomes[op - 1]
+        qtd = int(input(f"  Quantidade de '{nome}': "))
+        if qtd <= 0:
+            print("  ❌ Quantidade deve ser maior que zero.")
+            return
+        carrinho[nome] = carrinho.get(nome, 0) + qtd
+        print(f"  ✅ {qtd}x {nome} adicionado(s) ao carrinho.")
+    except ValueError:
+        print("  ❌ Entrada inválida.")
+
+def ver_carrinho():
+    if not carrinho:
+        print("\n  🛒 Seu carrinho está vazio.")
+        return
+    total = 0.0
+    print("\n╔══════════════════════════════════════╗")
+    print("║            🧾  SEU CARRINHO           ║")
+    print("╠══════════════════════════════════════╣")
+    print(f"  {'Produto':<20} {'Qtd':>4} {'Subtotal':>10}")
+    print("  " + "─" * 37)
+    for nome, qtd in carrinho.items():
+        subtotal = produtos[nome] * qtd
+        total += subtotal
+        print(f"  {nome:<20} {qtd:>4}   R${subtotal:>7.2f}")
+    print("  " + "─" * 37)
+    print(f"  {'TOTAL':<26} R${total:>7.2f}")
+    print("╚══════════════════════════════════════╝")
+
+def finalizar_compra():
+    if not carrinho:
+        print("\n  ❌ Carrinho vazio. Adicione produtos primeiro.")
+        return
+    ver_carrinho()
+    total = sum(produtos[n] * q for n, q in carrinho.items())
+    print("\n  Forma de pagamento:")
+    print("  1. Dinheiro   2. Débito   3. Crédito")
+    pag = input("  Escolha: ").strip()
+    formas = {"1": "Dinheiro", "2": "Débito", "3": "Crédito"}
+    forma = formas.get(pag, "Não informada")
+    print(f"\n  ✅ Compra finalizada! Total: R${total:.2f} ({forma})")
+    print("  Obrigado pela preferência! 🛍️")
+    carrinho.clear()
+
+def menu_supermercado():
+    while True:
+        print("\n═══════════ MENU SUPERMERCADO ═══════════")
+        print("  1. Ver catálogo e adicionar produto")
+        print("  2. Ver carrinho")
+        print("  3. Finalizar compra")
+        print("  0. Voltar ao menu principal")
+        op = input("  Escolha: ").strip()
+        if op == "1":
+            adicionar_produto()
+        elif op == "2":
+            ver_carrinho()
+        elif op == "3":
+            finalizar_compra()
+        elif op == "0":
+            break
+        else:
+            print("  ❌ Opção inválida.")
+
+
+# ─────────────────────────────────────────────
+#  MÓDULO 2 — PAR OU ÍMPAR
+# ─────────────────────────────────────────────
+
+def par_ou_impar():
+    print("\n╔══════════════════════════════════════╗")
+    print("║        🎲  PAR OU ÍMPAR               ║")
+    print("╠══════════════════════════════════════╣")
+    print("║  Jogue contra o computador!           ║")
+    print("╚══════════════════════════════════════╝")
+
+    placar_jogador = 0
+    placar_comp    = 0
+    rodadas        = 0
+
+    try:
+        total_rodadas = int(input("\n  Quantas rodadas? "))
+        if total_rodadas <= 0:
+            print("  ❌ Informe um número positivo.")
+            return
+    except ValueError:
+        print("  ❌ Entrada inválida.")
+        return
+
+    while rodadas < total_rodadas:
+        rodadas += 1
+        print(f"\n  ── Rodada {rodadas}/{total_rodadas} ──")
+
+        # Escolha do jogador: par ou ímpar
+        escolha = input("  Você escolhe (P)ar ou (I)mpar? ").strip().upper()
+        if escolha not in ("P", "I"):
+            print("  ❌ Digite P ou I.")
+            rodadas -= 1
+            continue
+        escolha_nome = "Par" if escolha == "P" else "Ímpar"
+
+        # Dedo do jogador
+        try:
+            dedo_jogador = int(input("  Quantos dedos você mostra? (0-5) "))
+            if dedo_jogador < 0 or dedo_jogador > 5:
+                print("  ❌ Valor entre 0 e 5.")
+                rodadas -= 1
+                continue
+        except ValueError:
+            print("  ❌ Número inválido.")
+            rodadas -= 1
+            continue
+
+        # Dedo do computador
+        dedo_comp = random.randint(0, 5)
+        soma = dedo_jogador + dedo_comp
+        resultado = "Par" if soma % 2 == 0 else "Ímpar"
+
+        print(f"\n  Você mostrou: {dedo_jogador} dedo(s)")
+        print(f"  PC mostrou:   {dedo_comp} dedo(s)")
+        print(f"  Soma:         {soma}  → {resultado}")
+
+        if resultado == escolha_nome:
+            print("  🏆 Você ganhou esta rodada!")
+            placar_jogador += 1
+        else:
+            print("  💻 Computador ganhou esta rodada!")
+            placar_comp += 1
+
+    # Resultado final
+    print("\n╔══════════════════════════════════════╗")
+    print("║            RESULTADO FINAL            ║")
+    print("╠══════════════════════════════════════╣")
+    print(f"  Você:         {placar_jogador} ponto(s)")
+    print(f"  Computador:   {placar_comp} ponto(s)")
+    if placar_jogador > placar_comp:
+        print("  🥇 PARABÉNS, VOCÊ VENCEU O JOGO!")
+    elif placar_comp > placar_jogador:
+        print("  🤖 O computador venceu. Tente novamente!")
+    else:
+        print("  🤝 EMPATE!")
+    print("╚══════════════════════════════════════╝")
+
+
+# ─────────────────────────────────────────────
+#  MÓDULO 3 — ÍNDICE DE IMC
+# ─────────────────────────────────────────────
+
+def classificar_imc(imc):
+    if imc < 18.5:
+        return "Abaixo do peso", "⚠️"
+    elif imc < 25.0:
+        return "Peso normal", "✅"
+    elif imc < 30.0:
+        return "Sobrepeso", "⚠️"
+    elif imc < 35.0:
+        return "Obesidade Grau I", "🔴"
+    elif imc < 40.0:
+        return "Obesidade Grau II", "🔴"
+    else:
+        return "Obesidade Grau III (Mórbida)", "🔴"
+
+def calcular_imc():
+    print("\n╔══════════════════════════════════════╗")
+    print("║        ⚖️   CALCULADORA DE IMC        ║")
+    print("╚══════════════════════════════════════╝")
+
+    resultados = []
+    continuar = True
+
+    while continuar:
+        nome = input("\n  Nome do paciente (ou Enter para 'Anônimo'): ").strip()
+        if not nome:
+            nome = "Anônimo"
+
+        try:
+            peso = float(input("  Peso (kg): ").replace(",", "."))
+            altura = float(input("  Altura (m): ").replace(",", "."))
+        except ValueError:
+            print("  ❌ Valores inválidos. Tente novamente.")
+            continue
+
+        if peso <= 0 or altura <= 0:
+            print("  ❌ Peso e altura devem ser positivos.")
+            continue
+
+        imc = peso / (altura ** 2)
+        categoria, emoji = classificar_imc(imc)
+        resultados.append((nome, peso, altura, imc, categoria, emoji))
+
+        print(f"\n  ┌─ Resultado de {nome} ─────────────")
+        print(f"  │  IMC:        {imc:.2f}")
+        print(f"  │  Categoria:  {emoji} {categoria}")
+        print(f"  └──────────────────────────────────")
+
+        # Peso ideal (faixa normal: IMC 18,5–24,9)
+        peso_min = 18.5 * (altura ** 2)
+        peso_max = 24.9 * (altura ** 2)
+        print(f"  💡 Peso ideal para sua altura: {peso_min:.1f} kg – {peso_max:.1f} kg")
+
+        op = input("\n  Calcular para outra pessoa? (S/N): ").strip().upper()
+        continuar = op == "S"
+
+    # Relatório final (se mais de um paciente)
+    if len(resultados) > 1:
+        print("\n╔══════════════════════════════════════╗")
+        print("║         📋  RELATÓRIO GERAL           ║")
+        print("╠══════════════════════════════════════╣")
+        print(f"  {'Nome':<15} {'Peso':>7} {'Altura':>7} {'IMC':>6}  Categoria")
+        print("  " + "─" * 55)
+        for nome, peso, altura, imc, cat, em in resultados:
+            print(f"  {nome:<15} {peso:>6.1f}kg {altura:>5.2f}m {imc:>6.2f}  {em} {cat}")
+        print("╚══════════════════════════════════════╝")
+
+
+# ─────────────────────────────────────────────
+#  MENU PRINCIPAL
+# ─────────────────────────────────────────────
+
+def menu_principal():
+    print("\n" + "=" * 42)
+    print("   🐍  PROGRAMA UNIFICADO — PYTHON  🐍")
+    print("   Engenharia de Software")
+    print("=" * 42)
+
+    while True:
+        print("\n┌────────────────────────────────────┐")
+        print("│         MENU PRINCIPAL              │")
+        print("├────────────────────────────────────┤")
+        print("│  1. 🛒  Menu Supermercado           │")
+        print("│  2. 🎲  Par ou Ímpar                │")
+        print("│  3. ⚖️   Calculadora de IMC          │")
+        print("│  0. ❌  Sair                         │")
+        print("└────────────────────────────────────┘")
+
+        op = input("  Escolha uma opção: ").strip()
+
+        if op == "1":
+            menu_supermercado()
+        elif op == "2":
+            par_ou_impar()
+        elif op == "3":
+            calcular_imc()
+        elif op == "0":
+            print("\n  👋 Encerrando o programa. Até mais!\n")
+            break
+        else:
+            print("  ❌ Opção inválida. Tente novamente.")
+
+
+if __name__ == "__main__":
+    menu_principal()
